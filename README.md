@@ -130,3 +130,50 @@ Tailor this prompt for Spark + SageMaker
 Make a lighter version for fast prototyping
 Or split this into Copilot-friendly phases
 But this prompt, as-is, is the right foundation.
+
+
+
+
+
+
+
+
+Label Definitions
+Class 0 — Dormant
+A customer is labeled Dormant in Q1 if any of the following conditions hold:
+txn_count_Q1 == 0
+OR total_spend_Q1 <= P10(total_spend_Q1)
+OR active_days_Q1 <= 1
+Interpretation: customer is effectively inactive during Q1.
+Class 2 — Heavy Spender
+A customer is labeled Heavy Spender in Q1 if all of the following conditions hold:
+total_spend_Q1 >= P85(total_spend_Q1)
+AND txn_count_Q1 >= P75(txn_count_Q1)
+AND active_days_Q1 >= P75(active_days_Q1)
+AND days_since_last_txn_Q1 <= P50(days_since_last_txn_Q1)
+Interpretation: customer demonstrates consistently high value and engagement within Q1.
+Class 1 — At Risk
+A customer is labeled At Risk if all of the following conditions hold:
+Customer is not Dormant
+Customer is not Heavy Spender
+AND any of the following conditions hold:
+total_spend_Q1 <= P40(total_spend_Q1)
+OR txn_count_Q1 <= P40(txn_count_Q1)
+OR active_days_Q1 <= P40(active_days_Q1)
+OR days_since_last_txn_Q1 >= P60(days_since_last_txn_Q1)
+Interpretation: customer remains active in Q1 but exhibits low or declining engagement intensity.
+Final Label Assignment Priority
+Labels are assigned in the following order:
+Dormant
+Heavy Spender
+At Risk (default for remaining customers)
+This ensures mutually exclusive and collectively exhaustive classes.
+Numeric Encoding
+Segment
+Label
+Dormant
+0
+At Risk
+1
+Heavy Spender
+2
